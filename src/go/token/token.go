@@ -98,6 +98,7 @@ const (
 	BREAK
 	CASE
 	CHAN
+	CHECK
 	CONST
 	CONTINUE
 
@@ -199,6 +200,7 @@ var tokens = [...]string{
 	BREAK:    "break",
 	CASE:     "case",
 	CHAN:     "chan",
+	CHECK:    "check",
 	CONST:    "const",
 	CONTINUE: "continue",
 
