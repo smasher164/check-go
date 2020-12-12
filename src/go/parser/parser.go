@@ -143,7 +143,13 @@ func (p *parser) shortVarDecl(decl *ast.AssignStmt, list []ast.Expr) {
 	// the same type, and at least one of the non-blank variables is new.
 	n := 0 // number of new variables
 	for _, x := range list {
-		if ident, isIdent := x.(*ast.Ident); isIdent {
+		ident, _ := x.(*ast.Ident)
+		if ident == nil {
+			if ue, _ := x.(*ast.UnaryExpr); ue != nil && ue.Op == token.CHECK {
+				ident, _ = ue.X.(*ast.Ident)
+			}
+		}
+		if ident != nil {
 			assert(ident.Obj == nil, "identifier already declared or resolved")
 			obj := ast.NewObj(ast.Var, ident.Name)
 			// remember corresponding assignment for other tools
@@ -1531,7 +1537,7 @@ func (p *parser) parseUnaryExpr(lhs bool) ast.Expr {
 	}
 
 	switch p.tok {
-	case token.ADD, token.SUB, token.NOT, token.XOR, token.AND:
+	case token.ADD, token.SUB, token.NOT, token.XOR, token.AND, token.CHECK:
 		pos, op := p.pos, p.tok
 		p.next()
 		x := p.parseUnaryExpr(false)
@@ -2225,7 +2231,8 @@ func (p *parser) parseStmt() (s ast.Stmt) {
 		// tokens that may start an expression
 		token.IDENT, token.INT, token.FLOAT, token.IMAG, token.CHAR, token.STRING, token.FUNC, token.LPAREN, // operands
 		token.LBRACK, token.STRUCT, token.MAP, token.CHAN, token.INTERFACE, // composite types
-		token.ADD, token.SUB, token.MUL, token.AND, token.XOR, token.ARROW, token.NOT: // unary operators
+		token.ADD, token.SUB, token.MUL, token.AND, token.XOR, token.ARROW, token.NOT, // unary operators
+		token.CHECK:
 		s, _ = p.parseSimpleStmt(labelOk)
 		// because of the required look-ahead, labeled statements are
 		// parsed by parseSimpleStmt - don't expect a semicolon after

@@ -1,28 +1,24 @@
 package main
 
 import (
+	"flag"
 	"fmt"
-	"go/scanner"
+	"go/parser"
 	"go/token"
+	"os"
 )
 
-func main() {
-	// src is the input that we want to tokenize.
-	src := []byte("check err")
-
-	// Initialize the scanner.
-	var s scanner.Scanner
-	fset := token.NewFileSet()                      // positions are relative to fset
-	file := fset.AddFile("", fset.Base(), len(src)) // register input "file"
-	s.Init(file, src, nil /* no error handler */, scanner.ScanComments)
-
-	// Repeated calls to Scan yield the token sequence found in the input.
-	for {
-		pos, tok, lit := s.Scan()
-		if tok == token.EOF {
-			break
-		}
-		fmt.Printf("%s\t%s\t%q\n", fset.Position(pos), tok, lit)
+func check(err error) {
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(2)
 	}
+}
 
+func main() {
+	flag.Parse()
+	fset := token.NewFileSet()
+	file := flag.Arg(0)
+	_, err := parser.ParseFile(fset, file, nil, 0)
+	check(err)
 }
