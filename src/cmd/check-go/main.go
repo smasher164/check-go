@@ -19,6 +19,6 @@ func main() {
 	flag.Parse()
 	fset := token.NewFileSet()
 	file := flag.Arg(0)
-	_, err := parser.ParseFile(fset, file, nil, 0)
+	_, err := parser.ParseFile(fset, file, nil, parser.Trace)
 	check(err)
 }
