@@ -1544,6 +1544,9 @@ func (p *parser) parseUnaryExpr(lhs bool) ast.Expr {
 		return &ast.UnaryExpr{OpPos: pos, Op: op, X: p.checkExpr(x)}
 
 	case token.CHECK:
+		if !lhs {
+			p.error(p.pos, "check must be on the left-hand side of an assignment")
+		}
 		pos, op := p.pos, p.tok
 		p.next()
 		x := p.parseUnaryExpr(true)

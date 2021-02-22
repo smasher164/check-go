@@ -1,5 +1,6 @@
 package a
 
 func foo() {
-	check err := 3
+	switch x, check err = strconv.Atoi(err); x {
+	}
 }
