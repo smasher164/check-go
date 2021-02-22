@@ -1537,10 +1537,16 @@ func (p *parser) parseUnaryExpr(lhs bool) ast.Expr {
 	}
 
 	switch p.tok {
-	case token.ADD, token.SUB, token.NOT, token.XOR, token.AND, token.CHECK:
+	case token.ADD, token.SUB, token.NOT, token.XOR, token.AND:
 		pos, op := p.pos, p.tok
 		p.next()
 		x := p.parseUnaryExpr(false)
+		return &ast.UnaryExpr{OpPos: pos, Op: op, X: p.checkExpr(x)}
+
+	case token.CHECK:
+		pos, op := p.pos, p.tok
+		p.next()
+		x := p.parseUnaryExpr(true)
 		return &ast.UnaryExpr{OpPos: pos, Op: op, X: p.checkExpr(x)}
 
 	case token.ARROW:
@@ -1638,7 +1644,6 @@ func (p *parser) parseExpr(lhs bool) ast.Expr {
 	if p.trace {
 		defer un(trace(p, "Expression"))
 	}
-
 	return p.parseBinaryExpr(lhs, token.LowestPrec+1)
 }
 

@@ -1,5 +1,5 @@
 package a
 
 func foo() {
-	var check = 3
+	check err := 3
 }
